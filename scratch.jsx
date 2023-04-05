@@ -324,3 +324,17 @@ const movies = [
 
 const sortedMovies = movies.sort((a, b) => b.average_rating - a.average_rating)
 console.log(sortedMovies);
+
+const sortedTitle = movies.sort((a, b) => {
+    let fa = b.release_date,
+        fb = a.release_date
+
+    if (fa < fb) {
+        return -1
+    }
+    if (fa > fb) {
+        return 1
+    }
+    return 0
+}) //?
+
