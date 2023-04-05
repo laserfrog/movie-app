@@ -17,11 +17,11 @@ const MovieCard = ({ title, image, date, average_rating, doAthing }) => {
 }
 
 function App() {
-  const [count, setCount] = useState(0)
   const [error, setError] = useState('')
   const [movies, setMovies] = useState([])
   const [moviesBackUp, setBackup] = useState([])
-  const [sort, setSort] = useState('default')
+  const [sort, setSort] = useState('release_date')
+  const [asc, setAsc] = useState(true)
 
   const navigate = useNavigate()
 
@@ -33,20 +33,9 @@ function App() {
 
 
 
-  const handleSort = () => {
-    console.log(sort)
-    switch (sort) {
-      case 'rating':
-        setMovies([...movies].sort((a, b) => b.average_rating - a.average_rating))
-        console.log('should be sorting')
-        break;
 
-      default:
-        setMovies(moviesBackUp)
-        console.log('should be set to default')
-        break;
-    }
-  }
+
+
 
 
   const getMovies = async () => {
@@ -69,6 +58,61 @@ function App() {
     getMovies()
   }, [])
 
+
+  useEffect(() => {
+    const handleSort = () => {
+      console.log(sort)
+      switch (sort) {
+        case 'average_rating':
+          setMovies([...movies].sort((a, b) => b.average_rating - a.average_rating))
+          console.log('should be sorting')
+          break;
+
+        case 'title':
+          console.log('this should be title????');
+          setMovies([...movies].sort((a, b) => {
+            let fa = a.title.toLowerCase(),
+              fb = b.title.toLowerCase()
+
+            if (fa < fb) {
+              return -1
+            }
+            if (fa > fb) {
+              return 1
+            }
+            return 0
+          }))
+          break
+
+        case 'release_date':
+          setMovies([...movies].sort((a, b) => {
+            let fa = b.release_date,
+              fb = a.release_date
+
+            if (fa < fb) {
+              return -1
+            }
+            if (fa > fb) {
+              return 1
+            }
+            return 0
+          }))
+          break
+
+        default:
+          setMovies(moviesBackUp)
+
+          break;
+      }
+    }
+    handleSort()
+  }, [sort])
+
+  const handleAsc = () => {
+    setAsc(!asc)
+    setMovies([...movies].reverse())
+  }
+
   return (
     <div className="App">
       hiii
@@ -76,11 +120,14 @@ function App() {
         <Select
           label={'Sort By'}
           options={[
-            { label: 'Default', value: 'default' },
-            { label: 'Rating', value: 'rating' },
+            { label: 'Release Date', value: 'release_date' },
+            { label: 'Rating', value: 'average_rating' },
+            { label: 'Title', value: 'title' },
           ]
-          } value={sort}
-          onChange={(event) => setSort(event.target.value)} onClick={handleSort} />
+          }
+          asc={asc}
+          onClick={handleAsc}
+          onChange={(event) => setSort(event.target.value)} />
       </div>
       <div className='cards'>
         {movies.map(movie => (<MovieCard key={movie.id} title={movie.title} image={movie.poster_path} date={movie.release_date} average_rating={movie.average_rating} doAthing={() => handleMovieClick(movie)} />))}
